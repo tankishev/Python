@@ -19,7 +19,7 @@ class Email:
         self.is_sent = True
 
     def get_info(self):
-        print(f'{self.sender} says to {self.receiver}: {self.content}. Sent: {self.is_sent}')
+        return f'{self.sender} says to {self.receiver}: {self.content}. Sent: {self.is_sent}'
 
 commands = []
 emails_list = []
@@ -37,4 +37,4 @@ sent_indices = list(map(int, input().split(', ')))
 for i, email in enumerate(emails_list):
     if i in sent_indices:
         email.send() 
-    email.get_info()
+        print(email.get_info())
