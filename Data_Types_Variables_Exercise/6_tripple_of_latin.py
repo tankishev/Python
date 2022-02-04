@@ -7,6 +7,4 @@ a_index = ord('a')
 for i in range(N):
     for j in range(N):
         for k in range(N):
-            print(chr(a_index+i) + chr(a_index+j) + chr(a_index+k))
-
-
+            print(f'{chr(a_index+i)}{chr(a_index+j)}{chr(a_index+k)}')
