@@ -1,0 +1,1 @@
+[Link to the problem solution in the Lists Advanced Exercise folder.](https://github.com/tankishev/Python_Fundamentals/blob/main/Lists_Advanced_Exercise/11_inventory.py)
