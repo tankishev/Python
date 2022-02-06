@@ -1,0 +1,1 @@
+[a link](https://github.com/tankishev/Python_Fundamentals/blob/main/Lists_Advanced_Exercise/9_moving_target.py)
