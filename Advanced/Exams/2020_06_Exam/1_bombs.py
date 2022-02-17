@@ -1,5 +1,7 @@
 # You will be given two sequences of integers, representing bomb effects and bomb casings.
-# You need to start from the first bomb effect and try to mix it with the last bomb casing. If the sum of their values is equal to any of the materials in the table below – create the bomb corresponding to the value and remove both bomb materials. Otherwise, just decrease the value of the bomb casing by 5. You need to stop combining when you have no more bomb effects or bomb casings, or you successfully filled the bombs pouch.
+# You need to start from the first bomb effect and try to mix it with the last bomb casing.
+# If the sum of their values is equal to any of the materials in the table below – create the bomb corresponding to the value and remove both bomb materials.
+# Otherwise, just decrease the value of the bomb casing by 5. You need to stop combining when you have no more bomb effects or bomb casings, or you successfully filled the bombs pouch.
 # Bombs:
 # •	Datura Bombs: 40
 # •	Cherry Bombs: 60
@@ -24,25 +26,25 @@
 # o	"Smoke Decoy Bombs: {count}"
 
 
-
 from collections import deque
 
 
 bombs = {
     'Datura Bombs': {
-        'requirement':40,
+        'requirement': 40,
         'count': 0}, 
     'Cherry Bombs': {
-        'requirement':60,
+        'requirement': 60,
         'count': 0},
     'Smoke Decoy Bombs':  {
-        'requirement':120,
+        'requirement': 120,
         'count': 0}
 }
 
 bomb_effect = deque([int(el) for el in input().split(', ')])
 bomb_casing = deque([int(el) for el in input().split(', ')])
 requirements = [bombs[key]['requirement'] for key in bombs.keys()]
+pouch = 0
 
 while bomb_casing and bomb_effect:
 
