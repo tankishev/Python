@@ -24,22 +24,25 @@ def main() -> None:
         cell = tuple(map(int, input().replace('(', '').replace(')', '').split(', ')))
         scoreboard[current_player]['trows'] += 1
 
-        if min(cell) < 0 or max(cell) >= 7:
-            continue
-
         pts = 0
-        value = get_cell(cell, matrix)
-        if value.isnumeric():
-            pts = int(value)
+        if min(cell) >= 0 and max(cell) < 7:
+            value = get_cell(cell, matrix)
 
-        elif value == 'D':
-            pts = multiple_pts(cell, matrix, 2)
+            if value.isnumeric():
+                pts = int(value)
 
-        elif value == 'T':
-            pts = multiple_pts(cell, matrix, 3)
+            elif value == 'D':
+                pts = multiple_pts(cell, matrix, 2)
+
+            elif value == 'T':
+                pts = multiple_pts(cell, matrix, 3)
+
+            elif value == 'B':
+                break
 
         scoreboard[current_player]['pts'] -= pts
-        if value == 'B' or scoreboard[current_player].get('pts') <= 0:
+
+        if scoreboard[current_player].get('pts') <= 0:
             break
 
         current_player, next_player = next_player, current_player
