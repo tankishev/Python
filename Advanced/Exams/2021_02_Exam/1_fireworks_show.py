@@ -58,7 +58,7 @@ while effects and power:
         effects.append(effect - 1)
         power.append(pwr)
     
-    is_done = (len(list(filter(lambda item: item[1] >=3, fireworks.items()))) == 3)
+    is_done = (len(list(filter(lambda item: item[1] >= 3, fireworks.items()))) == 3)
     if is_done:
         break
 

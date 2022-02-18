@@ -1,9 +1,12 @@
-# On the first line, you will be given a number representing the size of the field with a square shape. On the following few lines, you will be given the field with: 
+# On the first line, you will be given a number representing the size of the field with a square shape. On the
+# following few lines, you will be given the field with:
 # •	One player - randomly placed in it and marked with the symbol "P"
 # •	Numbers for coins placed at different positions of the field
 # •	Walls marked with "X"
-# After the field state, you will be given commands for the player's movement. Commands can be: "up", "down", "left", "right". If the command is invalid, you should ignore it. 
-# The player moves in the given direction with one step for each command and collects all the coins that come across. If he goes out of the field, he should continue to traverse the field from the opposite side in the same direction.
+# After the field state, you will be given commands for the player's movement. Commands can be: "up", "down", "left",
+# "right". If the command is invalid, you should ignore it.
+# The player moves in the given direction with one step for each command and collects all the coins that come across.
+# If he goes out of the field, he should continue to traverse the field from the opposite side in the same direction.
 # Note: He can go through the same path many times, but he can collect the coins just once (the first time).
 # There are only two possible outcomes of the game:
 # •	The player hits a wall, loses the game, and his coins are reduced to 50% and rounded down to the next-lowest number.
@@ -35,7 +38,7 @@ move = {
 
 def traverse_cell(cell: tuple, size: int) -> tuple:
     row, col = cell
-    if min(cell) >=0 and max(cell) < size:
+    if min(cell) >= 0 and max(cell) < size:
         return cell
     elif row < 0:
         return size - 1, col
@@ -60,17 +63,17 @@ def set_cell(cell: tuple, matrix: list, value: str) -> None:
 def main() -> None:
     matrix_size = int(input())
     matrix = [[el for el in input().split()] for _ in range(matrix_size)]
-    P_cell = next(((x,y) for x in range(matrix_size) for y in range(matrix_size) if get_cell((x, y), matrix) == 'P'))
+    p_cell = next(((x, y) for x in range(matrix_size) for y in range(matrix_size) if get_cell((x, y), matrix) == 'P'))
     game_over = False
     coins = 0
-    path = [[x for x in P_cell]]
+    path = [[x for x in p_cell]]
 
     while True:
         direction = input()
         if direction not in move.keys():
             break
 
-        new_cell = move[direction](P_cell)
+        new_cell = move[direction](p_cell)
         new_cell = traverse_cell(new_cell, matrix_size)
         path.append([x for x in new_cell])
 
@@ -82,12 +85,11 @@ def main() -> None:
 
         coins += int(cell_value)
         set_cell(new_cell, matrix, 'P')
-        set_cell(P_cell, matrix, '0')
-        P_cell = new_cell
+        set_cell(p_cell, matrix, '0')
+        p_cell = new_cell
 
         if coins >= 100:
             break
-        
 
     if game_over:
         print(f"Game over! You've collected {coins} coins.")
@@ -96,6 +98,7 @@ def main() -> None:
 
     print('Your path:')
     print(*path, sep='\n')
+
 
 if __name__ == '__main__':
     main()

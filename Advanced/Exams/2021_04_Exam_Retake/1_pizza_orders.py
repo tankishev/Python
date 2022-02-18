@@ -41,7 +41,7 @@ while orders and employees:
         order -= emp
         pizzas += emp
         while order > 0 and employees:
-            emp  = employees.pop()
+            emp = employees.pop()
             order -= emp
             pizzas += emp
         else: 
