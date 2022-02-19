@@ -2,8 +2,15 @@
 # •	the second and the last letter are switched (e.g., Holle means Hello)
 # •	the first letter is replaced by its character code (e.g., 72 means H)
 
-numbers = '0123456789'
-last_num_index = lambda x: max(i for i in range(len(x)) if x[i] in numbers)
+
+def last_num_index(word_: str) -> int:
+    """
+    :param word_:
+    :return: int; the index of the last numeric character reading the word ltr
+    """
+    numbers = '0123456789'
+    return max(i for i in range(len(word_)) if word_[i] in numbers)
+
 
 word_list = input().split(' ')
 output_list = []
