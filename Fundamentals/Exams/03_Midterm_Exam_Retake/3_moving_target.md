@@ -1,1 +1,1 @@
-[Link to the problem solution in the Lists Advanced Exercise folder.](https://github.com/tankishev/Python_Fundamentals/blob/main/Lists_Advanced_Exercise/9_moving_target.py)
+[Link to the problem solution in the Lists Advanced Exercise folder.](https://github.com/tankishev/Python/blob/main/Fundamentals/Exercises/Lists_Advanced_Exercise/9_moving_target.py)
