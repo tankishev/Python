@@ -1,4 +1,2 @@
-distance = 80
-speed = 30
-time = distance // speed
-print(time, "hours")
+for i in range(128):
+    print(f"{i}: {chr(i)}")
