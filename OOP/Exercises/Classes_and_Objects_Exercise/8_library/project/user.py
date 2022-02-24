@@ -9,6 +9,8 @@
 
 class User:
 
+    RETURN_SORTED_BOOKS_IN__STR__ = False
+
     def __init__(self, user_id: int, username: str) -> None:
         self.id = user_id
         self.user_id = user_id
@@ -21,4 +23,5 @@ class User:
             return ', '.join(retval)
 
     def __str__(self) -> str:
-        return f"{self.id}, {self.username}, {self.books}"
+        return f"{self.id}, {self.username}, " \
+               f"{sorted(self.books) if User.RETURN_SORTED_BOOKS_IN__STR__ else self.books}"

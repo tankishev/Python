@@ -38,7 +38,7 @@ class Registration:
         if Registration.BLOCK_REGISTRATION_OF_SAME_USERNAME_OR_ID:
             check = True
             if user.username in [u.username for u in library.user_records] \
-                or user.id in [u.id for u in library.user_records]:
+                    or user.id in [u.id for u in library.user_records]:
                 
                 check = False
         else:
@@ -49,7 +49,6 @@ class Registration:
         else:
             return f"User with id = {user.id} already registered in the library!"
 
-    
     def remove_user(self, user: User, library: Library) -> str:
         if user in library.user_records:
             library.user_records.remove(user)
@@ -60,7 +59,6 @@ class Registration:
 
         else:
             return "We could not find such user to remove!"
-
 
     def change_username(self, user_id: int, new_username: str, library: Library) -> str:
         if Registration.BLOCK_NAMECHANGE_IF_USED_BY_OTHER_USER:
@@ -73,14 +71,11 @@ class Registration:
 
         if new_username in filtered_records:
             return f"Please check again the provided username - " \
-                   f"it should be different than the username used so far!" 
+                   f"it should be different than the username used so far!"
 
         u = [u for u in library.user_records if u.id == user_id][0]
         old_username = u.username
         u.username = new_username
         if old_username in library.rented_books.keys():
             library.rented_books[new_username] = library.rented_books.pop(old_username)
-        return f'Username successfully changed to: {new_username} for user id: {user_id}'
-
-            
-
+        return f'Username successfully changed to: {new_username} for userid: {user_id}'

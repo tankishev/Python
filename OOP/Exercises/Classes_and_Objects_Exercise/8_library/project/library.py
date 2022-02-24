@@ -22,10 +22,10 @@ from .user import User
 
 class Library:
 
-    REMOVE_AUTHOR_FROM_AVAILABLE_IF_EMPTY = False
+    REMOVE_AUTHOR_FROM_AVAILABLE_IF_EMPTY = True
     CHECK_SO_USER_DONT_TAKE_BOOK_TWICE = True
     FIND_MIN_RETURN_DATE = True
-    REMOVE_USER_FROM_RENTED_BOOKS_IF_EMPTY = False
+    REMOVE_USER_FROM_RENTED_BOOKS_IF_EMPTY = True
 
     def __init__(self) -> None:
         self.user_records = []
