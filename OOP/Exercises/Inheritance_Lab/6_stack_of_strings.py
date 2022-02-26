@@ -19,5 +19,3 @@ class Stack:
 
     def __str__(self) -> str:
         return '[' + ', '.join(self.data[::-1]) + ']'
-
-
