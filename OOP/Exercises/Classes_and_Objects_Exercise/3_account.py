@@ -8,10 +8,10 @@
 
 class Account:
 
-    def __init__(self, id_: int, name: str, *balance: int):
+    def __init__(self, id_: int, name: str, balance=0) -> None:
         self.id = id_
         self.name = name
-        self.balance = balance[0] if balance else 0
+        self.balance = balance
 
     def credit(self, amount: int) -> int:
         self.balance += amount
