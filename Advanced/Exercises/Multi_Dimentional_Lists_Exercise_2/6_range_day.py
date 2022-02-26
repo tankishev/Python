@@ -23,63 +23,95 @@
 # •	Finally, print the index positions "[{row}, {column}]" of the targets that you hit, as shown in the examples.
 
 
-
 move = {
-    'up': lambda cell, y: (cell[0]-y, cell[1]),
-    'down': lambda cell, y: (cell[0]+y, cell[1]),
-    'left': lambda cell, y: (cell[0], cell[1]-y),
-    'right': lambda cell, y: (cell[0], cell[1]+y)
+    'up': lambda cell, steps: (cell[0] - steps, cell[1]),
+    'down': lambda cell, steps: (cell[0] + steps, cell[1]),
+    'left': lambda cell, steps: (cell[0], cell[1] - steps),
+    'right': lambda cell, steps: (cell[0], cell[1] + steps)
 }
 
 
-cell_value = lambda cell: matrix[cell[0]][cell[1]]
-
-
-def move_A_cell(direction:str, steps:str) -> tuple:   
-    
-    new_cell = move[direction](A_cell, int(steps))
-    
-    if 0 <= min(new_cell) and max(new_cell) < matrix_size:
-        if cell_value(new_cell) in ('.', 'A'):
+def move_a_cell(matrix: list, cell: tuple, direction: str, steps: int) -> tuple:
+    ''' Move the shooter cell. If new cell is out of range returns the current cell '''
+    new_cell = move[direction](cell, int(steps))
+    if cell_valid(new_cell):
+        if get_value(matrix, new_cell) in ('.', 'A'):
             return new_cell
-     
-    return A_cell
+    return cell
 
 
-def shoot(direction:str) -> tuple:     
-    target_cell = A_cell
-    while True:
-        target_cell = move[direction](target_cell, 1)    
-        if min(target_cell) < 0 or max(target_cell) == matrix_size:
-            return None
+def cell_valid(cell: tuple) -> bool:
+    ''' Validates if cell is out of range'''
+    if 0 <= min(cell) and max(cell) < 5:
+        return True
+    else:
+        return False
 
-        if cell_value(target_cell) == 'x':
+
+def shoot(matrix: list, cell: tuple, direction: str) -> tuple:
+    ''' Finds an 'x' cell in the firing direction. \
+        Returns none if no targes in that direction'''
+    target_cell = move[direction](cell, 1)
+    while cell_valid(target_cell):
+        if get_value(matrix, target_cell) == 'x':
             return target_cell
+        target_cell = move[direction](target_cell, 1)
 
 
-matrix_size = 5
-matrix = [[el for el in input().split()] for _ in range(matrix_size)]
-A_cell = next(((x,y) for x in range(matrix_size) for y in range(matrix_size) if matrix[x][y] == 'A'))
-starting_targets = sum([row.count('x') for row in matrix])
-shot_targets = []
+def get_value(matrix: list, cell: tuple) -> str:
+    ''' Gets the value at the x,y coordinates in the matrix'''
+    row, col = cell
+    return str(matrix[row][col])
 
-for _ in range(int(input())):
+
+def set_value(matrix: list, cell: tuple, value: str) -> list:
+    ''' Changes the value at the x, y coordinates in the matrix '''
+    row, col = cell
+    matrix[row][col] = value
+    return matrix
+
+
+def main() -> None:
+
+    matrix = []
+    shot_targets = []
+    starting_targets = 0
+    a_cell = None
+
+    for i in range(5):
+        row = [el for el in input().split()]
+        matrix.append(row)
+        starting_targets += row.count('x')
+        if 'A' in row:
+            a_cell = (i, row.index('A'))
+
+    for _ in range(int(input())):
         input_line = input().split()
-        command, args = input_line[0], input_line[1:]
 
+        command, direction = input_line[0], input_line[1]
+        
         if command == 'move':
-            A_cell = move_A_cell(*args)
-        
-        elif command == 'shoot':
-            hit_target = shoot(*args)
-            if hit_target:
-                matrix[hit_target[0]][hit_target[1]] = '.'
-                shot_targets.append(list(hit_target))
-        
-if len(shot_targets) == starting_targets:
-    print(f'Training completed! All {starting_targets} targets hit.')
-else:
-    print(f'Training not completed! {starting_targets-len(shot_targets)} targets left.')
+            steps = int(input_line[2])
+            a_cell = move_a_cell(matrix, a_cell, direction, steps)
 
-if shot_targets:
-    print(*shot_targets, sep='\n')
+        elif command == 'shoot':
+            hit_target = shoot(matrix, a_cell, direction)
+            if hit_target:
+                matrix = set_value(matrix, hit_target, '.')
+                shot_targets.append(list(hit_target))
+
+        if len(shot_targets) == starting_targets:
+            break
+
+    if len(shot_targets) == starting_targets:
+        print(f'Training completed! All {starting_targets} targets hit.')
+
+    else:
+        print(f'Training not completed! {starting_targets-len(shot_targets)} targets left.')
+
+    if shot_targets:
+        print(*shot_targets, sep='\n')
+
+
+if __name__ == '__main__':
+    main()
