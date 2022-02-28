@@ -25,7 +25,7 @@ class Band:
         self.albums = []
 
     def add_album(self, album: Album):
-        if album in self. albums:
+        if album.name in [a.name for a in self.albums]:
             return f'Band {self.name} already has {album.name} in their library.'
         else:
             self.albums.append(album)

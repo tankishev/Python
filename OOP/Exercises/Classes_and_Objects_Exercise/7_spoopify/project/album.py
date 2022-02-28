@@ -29,13 +29,10 @@ class Album:
     def __init__(self, name: str, *songs) -> None:
         self.name = name
         self.published = False
-        self.songs = []
-        if songs:
-            for song in songs:
-                self.add_song(song)
+        self.songs = list(songs)
 
     def add_song(self, song: Song) -> str:
-        if song in self.songs:
+        if song.name in [s.name for s in self.songs]:
             return 'Song is already in the album.'
         elif self.published:
             return 'Cannot add songs. Album is published.'
