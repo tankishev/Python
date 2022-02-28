@@ -1,14 +1,15 @@
 def multiply(times):
-
     def decorator(function):
-
-        output = times * function
-        return output
-
+        def wrapper(number):
+            return function(number) * times
+        return wrapper
     return decorator
+
 
 @multiply(3)
 def add_ten(number):
     return number + 10
 
-print(add_ten(3))
+
+output = add_ten(3)
+print(output)
