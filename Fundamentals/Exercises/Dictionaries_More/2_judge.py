@@ -27,12 +27,12 @@ while True:
         users[username] += int(points)
 
 for contest in contests.keys():
-    ranking = [rank for rank in sorted(contests[contest].items(), key= lambda item: (-item[1], item[0]))]
+    ranking = [rank for rank in sorted(contests[contest].items(), key=lambda item: (-item[1], item[0]))]
     output = [f'{i + 1}. {name} <::> {points}' for i, (name, points) in enumerate(ranking)]
     print(f"{contest}: {len(output)} participants")
     print(*output, sep='\n')
 
-user_ranking = [rank for rank in sorted(users.items(), key= lambda item: (-item[1], item[0]))]
+user_ranking = [rank for rank in sorted(users.items(), key=lambda item: (-item[1], item[0]))]
 output = [f'{i + 1}. {name} -> {points}' for i, (name, points) in enumerate(user_ranking)]
-print ("Individual standings:")
-print (*output, sep= '\n')
+print("Individual standings:")
+print(*output, sep='\n')
