@@ -6,11 +6,12 @@ class Zoo:
 
     def __init__(self, name: str, budget: int, animal_capacity: int, workers_capacity: int) -> None:
         self.name = name
-        self.animals = []
-        self.workers = []
         self.__budget = budget
         self.__animal_capacity = animal_capacity
         self.__workers_capacity = workers_capacity
+
+        self.animals = []
+        self.workers = []
 
     def add_animal(self, animal: Animal, price) -> str:
         if price <= self.__budget and self.__animal_capacity > len(self.animals):
