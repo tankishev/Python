@@ -1,12 +1,14 @@
-# Create separate file for each class as shown below and submit a zip file containing all files (zip the whole project folder/module) - it is important to include all files in project module to be able to make proper imports.
-# Create a class called Player. Upon initialization it should receive:
+# Create separate file for each class as shown below and submit a zip file containing all files
+# (zip the whole project folder/module) - it is important to include all files in project module
+# to be able to make proper imports.
+# Create a class called Player. Upon initialization, it should receive:
 # •	Private attribute name: string
 # •	Private attribute sprint: int
 # •	Private attribute dribble: int
 # •	Private attribute passing: int
 # •	Private attribute shooting: int
 # You should create property only for the name of the player. The class should also have one additional method:
-# Override the __str__() method of the class so it returns:
+# Override the __str__() method of the class, so it returns:
 # "Player: {name}
 # Sprint: {sprint}
 # Dribble: {dribble}
@@ -32,4 +34,8 @@ class Player:
         self.__name = name
 
     def __str__(self) -> str:
-        return f"Player: {self.__name}\nSprint: {self.__sprint}\nDribble: {self.__dribble}\nPassing: {self.__passing}\nShooting: {self.__shooting}"
+        return f"Player: {self.__name}" \
+               f"\nSprint: {self.__sprint}" \
+               f"\nDribble: {self.__dribble}" \
+               f"\nPassing: {self.__passing}" \
+               f"\nShooting: {self.__shooting}"
