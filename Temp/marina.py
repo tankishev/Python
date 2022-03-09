@@ -1,2 +1,2 @@
-for i in range(128):
-    print(f"{i}: {chr(i)}")
+empty_list = []
+print(', '.join(empty_list))
