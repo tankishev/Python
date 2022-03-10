@@ -10,7 +10,6 @@ def solution():
             yield i / 2
 
     def take(n, seq):
-
-# TODO: Implement
+        pass
 
     return (take, halves, integers)
