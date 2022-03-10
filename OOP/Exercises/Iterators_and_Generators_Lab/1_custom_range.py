@@ -4,7 +4,7 @@ class custom_range:
         self.start = start
         self.end = end
         
-    def __iter__(self):
+    def __iter__(self) -> iter:
         return self
 
     def __next__(self) -> int:
@@ -14,6 +14,8 @@ class custom_range:
             return i
         raise StopIteration()
 
-one_to_ten = custom_range(1, 10)
-for num in one_to_ten:
-    print(num)
+
+if __name__ == '__main__':
+    one_to_ten = custom_range(1, 10)
+    for num in one_to_ten:
+        print(num)
