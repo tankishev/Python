@@ -1,11 +1,6 @@
-from .customer import Customer
-from .trainer import Trainer
-from .equipment import Equipment
-from .exercise_plan import ExercisePlan
-from .subscription import Subscription
-
-
 class Gym:
+
+    __REPR_ORDER = ('Subscription', 'Customer', 'Trainer', 'Equipment', 'ExercisePlan')
 
     def __init__(self) -> None:
         self.customers = []
@@ -14,30 +9,29 @@ class Gym:
         self.plans = []
         self.subscriptions = []
 
-    def add_customer(self, customer: Customer):
-        return self.__class__.add_object(customer, self.customers)
+        self.__ref_to = {
+            'Customer': self.customers,
+            'Trainer': self.trainers,
+            'Equipment': self.equipment,
+            'ExercisePlan': self.plans,
+            'Subscription': self.subscriptions
+        }
 
-    def add_trainer(self, trainer: Trainer):
-        return self.__class__.add_object(trainer, self.trainers)
+        self.add_customer = self.__add_object
+        self.add_trainer = self.__add_object
+        self.add_equipment = self.__add_object
+        self.add_plan = self.__add_object
+        self.add_subscription = self.__add_object
 
-    def add_equipment(self, equipment: Equipment):
-        return self.__class__.add_object(equipment, self.equipment)
-
-    def add_plan(self, plan: ExercisePlan):
-        return self.__class__.add_object(plan, self.plans)
-
-    def add_subscription(self, subscription: Subscription):
-        return self.__class__.add_object(subscription, self.subscriptions)
+    def __add_object(self, obj) -> None:
+        obj_list = self.__ref_to.get(obj.__class__.__name__)
+        if not any(obj.id == el.id for el in obj_list):
+            obj_list.append(obj)
 
     def subscription_info(self, subscription_id: int):
         retval = ''
-        for el in ('subscriptions', 'customers', 'trainers', 'equipment', 'plans'):
-            for obj in self.__dict__.get(el, []):
+        for obj_type in Gym.__REPR_ORDER:
+            for obj in self.__ref_to.get(obj_type, []):
                 if obj.id == subscription_id:
                     retval += repr(obj) + '\n'
         return retval.rstrip()
-
-    @staticmethod
-    def add_object(obj, obj_list) -> None:
-        if not any(obj.id == el.id for el in obj_list):
-            obj_list.append(obj)
