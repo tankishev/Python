@@ -29,7 +29,7 @@
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 char_num = lambda x: alphabet.find(x.lower()) + 1
 
-input_strings  = [x for x in input().split()]
+input_strings = [x for x in input().split()]
 output = 0
 
 for word in input_strings:
@@ -49,4 +49,4 @@ for word in input_strings:
 
     output += number_in_word
 
-print ('{:.2f}'.format(output))
+print('{:.2f}'.format(output))
