@@ -2,10 +2,19 @@ from abc import abstractmethod, ABC
 
 
 class Duck(ABC):
-    pass
+    @staticmethod
+    @abstractmethod
+    def quack():
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def walk():
+        pass
 
 
 class RubberDuck(Duck):
+
     @staticmethod
     def quack():
         return "Squeek"
