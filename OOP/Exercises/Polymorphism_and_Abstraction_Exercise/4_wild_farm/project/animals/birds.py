@@ -28,7 +28,7 @@ class Owl(Bird):
 
     @staticmethod
     def make_sound():
-        return 'Hoot Hoot'
+        return "Hoot Hoot"
 
 
 class Hen(Bird):
@@ -38,7 +38,7 @@ class Hen(Bird):
 
     @property
     def allowed_foods(self):
-        return None
+        return ['Vegetable', 'Fruit', 'Meat', 'Seed']
 
     @property
     def weight_gain(self):
@@ -46,4 +46,4 @@ class Hen(Bird):
 
     @staticmethod
     def make_sound():
-        return 'Cluck'
+        return "Cluck"

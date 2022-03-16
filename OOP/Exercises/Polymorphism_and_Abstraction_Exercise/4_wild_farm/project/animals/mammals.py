@@ -28,7 +28,7 @@ class Mouse(Mammal):
 
     @staticmethod
     def make_sound():
-        return 'Squeak'
+        return "Squeak"
 
 
 class Dog(Mammal):
@@ -38,7 +38,7 @@ class Dog(Mammal):
 
     @staticmethod
     def make_sound():
-        return 'Woof!'
+        return "Woof!"
 
     @property
     def allowed_foods(self):
@@ -64,7 +64,7 @@ class Cat(Mammal):
 
     @staticmethod
     def make_sound():
-        return 'Meow'
+        return "Meow"
 
 
 class Tiger(Mammal):
@@ -82,4 +82,4 @@ class Tiger(Mammal):
 
     @staticmethod
     def make_sound():
-        return 'ROAR!!!'
+        return "ROAR!!!"
