@@ -7,8 +7,7 @@ class DecorationRepository:
         self.decorations = []
 
     def add(self, decoration: BaseDecoration) -> None:
-        if decoration not in self.decorations:
-            self.decorations.append(decoration)
+        self.decorations.append(decoration)
 
     def remove(self, decoration: BaseDecoration) -> bool:
         if decoration in self.decorations:

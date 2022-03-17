@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 
 class BaseFish(ABC):
 
-    @abstractmethod
     def __init__(self, name: str, species: str, size: int, price: float) -> None:
         self.name = name
         self.species = species
@@ -44,8 +43,8 @@ class BaseFish(ABC):
     def eat(self) -> None:
         self.size += 5
 
-    @abstractmethod
     @property
+    @abstractmethod
     def allowed_habitat(self):
         pass
 
