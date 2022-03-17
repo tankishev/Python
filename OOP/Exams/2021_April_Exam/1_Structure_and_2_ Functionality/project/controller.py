@@ -23,10 +23,6 @@ class Controller:
         return f"Invalid decoration type."
 
     def insert_decoration(self, aquarium_name: str, decoration_type: str):
-        """
-        Finds an existing decoration object from the repository and adds it to the aquarium.
-        Returns string indicating if operation is successful.
-        """
         found_aquarium = self.__find_aquarium_by_name(aquarium_name)
         if found_aquarium:
             found_decoration = self.decorations_repository.find_by_type(decoration_type)
@@ -36,17 +32,14 @@ class Controller:
             return f"There isn't a decoration of type {decoration_type}."
 
     def add_fish(self, aquarium_name: str, fish_type: str, fish_name: str, fish_species: str, price: float):
-        """
-        Create add fish of the given type to an aquarium with the given name if such exists
-        """
-        if fish_type in ("FreshwaterFish", "SaltwaterFish"):
-            new_fish = eval(f'{fish_type}("{fish_name}", "{fish_species}", {price})')
-            found_aquarium = self.__find_aquarium_by_name(aquarium_name)
-            if found_aquarium:
+        found_aquarium = self.__find_aquarium_by_name(aquarium_name)
+        if found_aquarium:
+            if fish_type in ("FreshwaterFish", "SaltwaterFish"):
+                new_fish = eval(f'{fish_type}("{fish_name}", "{fish_species}", {price})')
                 if found_aquarium.aquarium_type != new_fish.allowed_habitat:
                     return f"Water not suitable."
                 return found_aquarium.add_fish(new_fish)
-        return f"There isn't a fish of type {fish_type}."
+            return f"There isn't a fish of type {fish_type}."
 
     def feed_fish(self, aquarium_name: str) -> str:
         found_aquarium = self.__find_aquarium_by_name(aquarium_name)

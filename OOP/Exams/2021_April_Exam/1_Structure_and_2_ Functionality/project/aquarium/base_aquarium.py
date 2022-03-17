@@ -43,9 +43,11 @@ class BaseAquarium(ABC):
             fish.eat()
 
     def __str__(self) -> str:
-        fish_list = [self.fish[i].name if i < len(self.fish) else 'none' for i in range(self.capacity)]
+        fish_list = ' '.join([fish.name for fish in self.fish])
+        if not fish_list:
+            fish_list = 'none'
         retval = f'{self.name}:' \
-                 f'\nFish: {" ".join(fish_list)}' \
+                 f'\nFish: {fish_list}' \
                  f'\nDecorations: {len(self.decorations)}' \
                  f'\nComfort: {self.calculate_comfort()}'
         return retval

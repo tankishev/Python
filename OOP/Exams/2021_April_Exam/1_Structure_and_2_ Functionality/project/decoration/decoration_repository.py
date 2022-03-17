@@ -16,7 +16,7 @@ class DecorationRepository:
         return False
 
     def find_by_type(self, decoration_type: str):
-        for decoration in self.decorations:
+        for i, decoration in enumerate(self.decorations):
             if decoration.decoration_type == decoration_type:
-                return decoration
+                return self.decorations.pop(i)
         return 'None'
