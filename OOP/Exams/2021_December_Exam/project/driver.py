@@ -1,6 +1,3 @@
-from project.car.car import Car
-
-
 class Driver:
 
     def __init__(self, name: str) -> None:
@@ -13,15 +10,10 @@ class Driver:
         return self.__name
 
     @name.setter
-    def name(self, value):
-        if len(value) == 0:
+    def name(self, value: str):
+        if value is None or value == '' or value.isspace():
             raise ValueError("Name should contain at least one character!")
         self.__name = value
 
-    @property
-    def car(self):
-        return self.__car
-
-    @car.setter
-    def car(self, value: Car):
-        self.__car = value
+    def add_win(self):
+        self.number_of_wins += 1

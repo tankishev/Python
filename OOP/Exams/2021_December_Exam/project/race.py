@@ -10,6 +10,6 @@ class Race:
 
     @name.setter
     def name(self, value):
-        if len(value) == 0:
+        if value == '' or value is None:
             raise ValueError("Name cannot be an empty string!")
         self.__name = value
