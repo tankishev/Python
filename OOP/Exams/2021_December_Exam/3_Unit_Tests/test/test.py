@@ -5,67 +5,125 @@ import unittest
 class TeamTests(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.t = Team('TeamName')
-        new_members = {'Valio': 22, 'Pesho': 42}
-        self.t.add_member(**new_members)
-        self.t.remove_member('Valio')
-        self.assertTrue(hasattr(self.t, '_Team__name'))
-        self.assertDictEqual(self.t.members, {'Pesho': 42})
-        self.assertEqual(self.t.name, 'TeamName')
+        self.team = Team('Avengers')
+
+    def test_init(self):
+        error_message = "Team Name can contain only letters!"
+        wrong_name = '123'
+        with self.assertRaises(ValueError) as context:
+            self.team = Team(wrong_name)
+        self.assertEqual(error_message, str(context.exception))
+
+        team_name = 'AvengersExpanded'
+        self.team.name = team_name
+        self.assertEqual(team_name, self.team.name)
+        self.assertTrue(hasattr(self.team, '_Team__name'))
+        self.assertEqual(team_name, self.team._Team__name)
+
+        expected_members = {}
+        self.assertDictEqual(expected_members, self.team.members)
 
     def test_getter_setter_validation(self):
-        new_team = "Avengers123._"
+        team_name = 'Avengers'
+        self.team = Team(team_name)
+
+        wrong_name = 'The_Avengers'
+        error_message = "Team Name can contain only letters!"
+
         with self.assertRaises(ValueError) as contex:
-            Team(new_team)
-        self.assertEqual("Team Name can contain only letters!", str(contex.exception))
-        self.assertEqual(self.t.name, 'TeamName')
+            self.team.name = wrong_name
+        self.assertEqual(error_message, str(contex.exception))
+
+        self.assertEqual(team_name, self.team.name)
 
     def test_add_member_method(self):
-        new_members = {'Pesho': 32, 'Bobi': 32, 'Nicki': 88}
-        retval = self.t.add_member(**new_members)
-        self.assertEqual(retval, 'Successfully added: Bobi, Nicki')
-        self.assertDictEqual(self.t.members, {'Pesho': 42, 'Bobi': 32, 'Nicki': 88})
+        new_members = {'Hulk': 38, 'Thor': 242, 'Peter Parker': 'too young'}
+        retval = self.team.add_member(**new_members)
+        self.assertEqual('Successfully added: Hulk, Thor, Peter Parker', retval)
+        self.assertDictEqual(new_members, self.team.members)
 
-    def test_remove_member_method(self):
-        retval_not_existing = self.t.remove_member('Misho')
-        retval_ok = self.t.remove_member('Pesho')
-        self.assertDictEqual({}, self.t.members)
-        self.assertEqual('Member with name Misho does not exist', retval_not_existing)
-        self.assertEqual('Member Pesho removed', retval_ok)
+        add_members = {'Steve': 105, 'Peter Parker': 18}
+        retval = self.team.add_member(**add_members)
+        self.assertEqual('Successfully added: Steve', retval)
 
-    def test_dunder_greater(self):
-        other = Team('Other')
-        other_members = {'Jess': 10, 'Stefan': 20}
-        other.add_member(**other_members)
-        self.assertFalse(self.t > other)
-        self.assertTrue(self.t < other)
-        other.remove_member('Jess')
-        self.assertFalse(self.t > other)
-        self.assertFalse(self.t < other)
-        other.remove_member('Stefan')
-        self.assertTrue(self.t > other)
-        self.assertFalse(self.t < other)
+        expected_members = {'Hulk': 38, 'Thor': 242, 'Peter Parker': 'too young', 'Steve': 105}
+        self.assertDictEqual(expected_members, self.team.members)
+
+    def test_remove_member_successful(self):
+        name = 'Peter Parker'
+        message_on_success = f"Member {name} removed"
+        new_members = {'Hulk': 38, 'Thor': 242, 'Peter Parker': 'too young'}
+
+        self.team.add_member(**new_members)
+
+        retval = self.team.remove_member(name)
+        self.assertEqual(message_on_success, retval)
+
+        expected_members = {'Hulk': 38, 'Thor': 242}
+        self.assertDictEqual(expected_members, self.team.members)
+
+    def test_remove_member_unsuccessful(self):
+        name = 'Peter Parker'
+        new_members = {'Hulk': 38, 'Thor': 242}
+        message_on_failure = f"Member with name {name} does not exist"
+
+        self.team.add_member(**new_members)
+        retval = self.team.remove_member(name)
+        self.assertEqual(message_on_failure, retval)
+
+    def test_dunder_greater_true(self):
+        members = {'Hulk': 38, 'Thor': 242, 'Peter Parker': 'too young'}
+        self.team.add_member(**members)
+
+        other_team = Team('Hydra')
+        other_members = {'Bucky': 106, 'Red Skull': 45}
+        other_team.add_member(**other_members)
+
+        expected = True
+        self.assertEqual(expected, self.team > other_team)
+
+    def test_dunder_greater_false(self):
+        members = {'Hulk': 38, 'Thor': 242}
+        self.team.add_member(**members)
+
+        other_team = Team('Hydra')
+        other_members = {'Bucky': 106, 'Red Skull': 45, 'Pierce': 60}
+        other_team.add_member(**other_members)
+
+        expected = False
+        self.assertEqual(expected, self.team > other_team)
 
     def test_dunder_len(self):
-        self.assertTrue(len(self.t) == len(self.t.members))
-        self.assertEqual(len(self.t), 1)
+        members = {'Hulk': 38, 'Thor': 242}
+        self.team.add_member(**members)
+        expected = 2
+        self.assertEqual(expected, len(self.team))
 
     def test_dunder_add(self):
-        other_members = {'Viki': 12, 'Bobi': 32}
-        other_t = Team('Other')
-        other_t.add_member(**other_members)
-        new_team = self.t + other_t
-        self.assertEqual(new_team.name, 'TeamNameOther')
-        self.assertDictEqual(new_team.members, {'Pesho': 42, 'Viki': 12, 'Bobi': 32})
+        members = {'Hulk': 38, 'Thor': 242}
+        self.team.add_member(**members)
+        other_members = {'Bucky': 106, 'Red Skull': 45, 'Pierce': 60}
+        other_team = Team("Hydra")
+        other_team.add_member(**other_members)
+
+        mcu_team = self.team + other_team
+        test_team = Team('Test')
+        test_team.add_member(**self.team.members)
+        test_team.add_member(**other_team.members)
+
+        expected_name = self.team.name + other_team.name
+        self.assertEqual(expected_name, mcu_team.name)
+        self.assertDictEqual(test_team.members, mcu_team.members)
 
     def test_dunder_str(self):
-        new_members = {'Viki': 12, 'Bobi': 32}
-        self.t.add_member(**new_members)
-        result = [f"Team name: {self.t.name}"]
-        members = list(sorted(self.t.members.items(), key=lambda x: (-x[1], x[0])))
+        members = {'Hulk': 38, 'Thor': 242, 'Peter Parker': 18}
+        self.team.add_member(**members)
+
+        result = [f"Team name: {self.team.name}"]
+        members = list(sorted(self.team.members.items(), key=lambda x: (-x[1], x[0])))
         result.extend([f"Member: {x[0]} - {x[1]}-years old" for x in members])
         retval = "\n".join(result)
-        self.assertEqual(str(self.t), retval)
+        self.assertEqual(str(self.team), retval)
 
 
 if __name__ == '__main__':
