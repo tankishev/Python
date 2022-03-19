@@ -8,6 +8,10 @@ from project.car.sports_car import SportsCar
 class ObjectFactory:
 
     @staticmethod
+    def allowed_car_types():
+        return ['MuscleCar', 'SportsCar']
+
+    @staticmethod
     def create_car(car_type: str, model: str, speed_limit: int):
         if car_type == 'MuscleCar':
             return MuscleCar(model, speed_limit)
@@ -31,14 +35,15 @@ class Controller:
         self.races = []
 
     def create_car(self, car_type: str, model: str, speed_limit: int):
-        if any(car.model == model for car in self.cars):
-            raise Exception(f"Car {model} is already created!")
-        new_car = ObjectFactory.create_car(car_type, model, speed_limit)
-        self.cars.append(new_car)
-        return f"{car_type} {model} is created."
+        if car_type in ObjectFactory.allowed_car_types():
+            if any(car.model == model for car in self.cars):
+                raise Exception(f"Car {model} is already created!")
+            new_car = ObjectFactory.create_car(car_type, model, speed_limit)
+            self.cars.append(new_car)
+            return f"{car_type} {model} is created."
 
     def create_driver(self, driver_name: str):
-        if self.__find_driver_by_name(driver_name):
+        if any(driver.name == driver_name for driver in self.drivers):
             raise Exception(f"Driver {driver_name} is already created!")
         new_driver = ObjectFactory.create_driver(driver_name)
         self.drivers.append(new_driver)
@@ -85,7 +90,7 @@ class Controller:
         if found_race:
             if len(found_race.drivers) >= 3:
                 retval = ''
-                race_results = sorted(found_race.drivers, key=lambda driver: -driver.car.speed_limit)[:3]
+                race_results = sorted(found_race.drivers, key=lambda item: -item.car.speed_limit)[:3]
                 for driver in race_results:
                     driver.add_win()
                     retval += f"Driver {driver.name} " \
