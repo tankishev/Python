@@ -41,7 +41,7 @@ class Astronaut(ABC):
 
     @property
     def info(self):
-        bag_items = '"none"'
+        bag_items = 'none'
         if len(self.backpack) > 0:
             bag_items = ', '.join(self.backpack)
 

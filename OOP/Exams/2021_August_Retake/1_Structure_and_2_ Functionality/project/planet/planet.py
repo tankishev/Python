@@ -1,7 +1,7 @@
 class Planet:
 
-    def __init__(self) -> None:
-        self.name = 'None'
+    def __init__(self, name: str) -> None:
+        self.name = name
         self.items = []
 
     @property
@@ -16,8 +16,7 @@ class Planet:
 
     @classmethod
     def from_name_items(cls, name: str, items: str):
-        new_planet = cls()
-        new_planet.name = name
+        new_planet = cls(name)
         new_planet.items = [el for el in items.split(', ')]
         return new_planet
 

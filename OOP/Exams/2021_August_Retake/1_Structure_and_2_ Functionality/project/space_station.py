@@ -5,6 +5,7 @@ from project.astronaut.geodesist import Geodesist
 from project.astronaut.meteorologist import Meteorologist
 from collections import deque
 
+
 class ObjectFactory:
 
     @staticmethod
@@ -25,7 +26,6 @@ class SpaceStation:
         self.missions = {'successful': 0, 'failed': 0}
 
     def add_astronaut(self, astronaut_type: str, name: str) -> str:
-
         if astronaut_type in ("Biologist", "Geodesist", "Meteorologist"):
             if self.astronaut_repository.find_by_name(name):
                 return f"{name} is already added."
@@ -98,7 +98,7 @@ class SpaceStation:
                  f"\n{self.missions.get('failed', 0)} missions were not completed!" \
                  f"\nAstronauts' info:"
         retval += '\n' + '\n'.join([astronaut.info for astronaut in self.astronaut_repository.astronauts])
-        return retval
+        return retval.rstrip()
 
 
 if __name__ == '__main__':
