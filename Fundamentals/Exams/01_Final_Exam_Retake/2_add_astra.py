@@ -31,9 +31,9 @@ total_calories = 0
 
 input_line = input()
 
-matches = re.finditer(pattern,input_line)
+matches = re.finditer(pattern, input_line)
 for m in matches:
-    food.append((m.group(2),m.group(3),m.group(4)))
+    food.append((m.group(2), m.group(3), m.group(4)))
     total_calories += int(m.group(4))
 
 print(f"You have food to last you for: {total_calories//2000} days!")

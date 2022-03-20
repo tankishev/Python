@@ -29,7 +29,7 @@ matched_words = []
 match_count = 0
 line_input = input()
 
-matches = re.finditer(pattern,line_input)
+matches = re.finditer(pattern, line_input)
 
 for m in matches:
     match_count += 1
