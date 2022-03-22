@@ -1,8 +1,10 @@
 # You are at the shooting gallery again, and you need a program that helps you keep track of moving targets. 
 # On the first line, you will receive a sequence of targets with their integer values, split by a single space. 
-# Then, you will start receiving commands for manipulating the targets until the "End" command. The commands are the following:
+# Then, you will start receiving commands for manipulating the targets until the "End" command.
+# The commands are the following:
 # •	"Shoot {index} {power}"
-# o	Shoot the target at the index if it exists by reducing its value by the given power (integer value). A target is considered shot when its value reaches 0.
+# o	Shoot the target at the index if it exists by reducing its value by the given power (integer value).
+#   A target is considered shot when its value reaches 0.
 # o	Remove the target if it is shot.
 # 
 # •	"Add {index} {value}"
@@ -15,7 +17,7 @@
 # 	{radius}	{radius}	{strikeIndex}	{radius}	{radius}		
 # •	"End"
 # o	Print the sequence with targets in the following format:
-# "{target1}|{target2} … |{targetn}"
+# "{target1}|{target2} … |{targetN}"
 # 
 # Input / Constraints
 # •	On the first line, you will receive the sequence of targets – integer values [1-10000].
@@ -25,9 +27,7 @@
 # •	Print the appropriate message in case of the "Strike" command if necessary.
 # •	In the end, print the sequence of targets in the format described above.
 
-
-
-targets_list = list(map(int,input().split(' ')))
+targets_list = [int(el) for el in input().split(' ')]
 while True:
     command = input()
     if command == 'End':
@@ -46,13 +46,13 @@ while True:
 
     elif command_args[0] == 'Add':
         if 0 <= index < len(targets_list):
-            targets_list.insert(index,value)
+            targets_list.insert(index, value)
         else:
             print('Invalid placement!')
             
     elif command_args[0] == 'Strike':
         if index - value >= 0 and index + value < len(targets_list):
-            targets_list = [targets_list[i] for i in range(len(targets_list)) if not ( index - value <= i <= index + value)]
+            targets_list = [targets_list[i] for i in range(len(targets_list)) if not (index - value <= i <= index + value)]
         else:
             print('Strike missed!')
 

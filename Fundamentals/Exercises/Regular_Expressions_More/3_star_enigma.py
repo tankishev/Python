@@ -27,11 +27,13 @@ import re
 
 message_parser = re.compile(r'(?<=@)([a-zA-Z]+)(?:[^\@\!\:\>\-]+)?(?::(\d+))(?:[^\@\!\:\>\-]+)?!(A|D)!(?:[^\@\!\:\>\-]+)?->(\d+)')
 
+
 def decrypt(message):
     decrypt_symbols = r'[starSTAR]'
     decrypt_matches = re.findall(decrypt_symbols, message)
     key = len(decrypt_matches)
     return ''.join([chr(ord(x) - key) for x in message])
+
 
 planets_attacked = []
 planets_destroyed = []
