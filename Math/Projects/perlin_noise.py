@@ -10,16 +10,23 @@ def gen_main_grid(grid_size: int) -> tuple:
     return x_axis, y_axis
 
 
+def gen_grad_grid(main_grid_size: int, granularity=1) -> tuple:
+    while main_grid_size % granularity != 0:
+        granularity -= 1
+    grad_grid_size = int(main_grid_size / granularity)
+    return granularity, grad_grid_size
+
+
 def generate_gradient_vectors_matrix(number_of_unique_vectors: int, gradient_grid_size: int) -> np.ndarray:
 
     v = np.linspace(0, 2 * np.pi, number_of_unique_vectors + 1)
-    a = np.round(np.sin(v), 5)
-    b = np.round(np.cos(v), 5)
-    # vectors = tuple(zip(a, b))
-    # vector_indexes = list(range(number_of_unique_vectors))
+    vy = np.round(np.sin(v), 5)
+    vx = np.round(np.cos(v), 5)
+    vectors = tuple(zip(vx, vy))
+    vector_indexes = list(range(number_of_unique_vectors))
 
-    vectors = ((1, 1), (1, -1), (-1, 1), (-1, -1))
-    vector_indexes = list(range(len(vectors)))
+    # vectors = ((1, 1), (1, -1), (-1, 1), (-1, -1))
+    # vector_indexes = list(range(len(vectors)))
     random_indexes = np.random.choice(vector_indexes, size=gradient_grid_size**2)
     output = np.array([vectors[idx] for idx in random_indexes]).reshape([gradient_grid_size, gradient_grid_size, 2])
     # print(output)
@@ -59,18 +66,18 @@ def fade_noise(x):
     return x**5 * 6 - x**4 * 15 + x**3 * 10
 
 
-def generate_noise(main_grid_size, frequency, gvm):
+def generate_noise(main_grid_size, sub_grid_number, gvm):
 
     # Generate main grid, gradient vectors matrix and distance array
     x, y = gen_main_grid(main_grid_size)
-    while main_grid_size % frequency != 0:
-        frequency -= 1
-    grad_grid_size = int(main_grid_size / frequency)
+    while main_grid_size % sub_grid_number != 0:
+        sub_grid_number -= 1
+    grad_grid_size = int(main_grid_size / sub_grid_number)
 
-    dm = np.linspace(0.01, 0.99, grad_grid_size)
+    dm = np.linspace(0, 1, grad_grid_size)
 
     # Calc gradient vectors coordinates for each cell
-    g_c = np.vectorize(lambda n, s: math.floor(n/ s))
+    g_c = np.vectorize(lambda n, s: math.floor(n / s))
     gx = np.array(g_c(x, grad_grid_size))
     gy = np.array(g_c(y, grad_grid_size))
     gc = np.vstack((gx, gy)).T
@@ -131,6 +138,14 @@ def gen_images_effect_of_number_of_sub_grids(img_size: int, min_sub_grids: int, 
     plt.show()
 
 
+def final_script(main_grid_size=128, starting_gran=1, gran_levels=3, num_unique_vectors=8):
+    x, y = gen_main_grid(main_grid_size)
+    for i in range(starting_gran, starting_gran + gran_levels):
+        granularity, grad_grid_size = gen_grad_grid(main_grid_size, i)
+        gvm = generate_gradient_vectors_matrix(num_unique_vectors, grad_grid_size)
+        dm = np.linspace(0, 1, grad_grid_size)
+
+
 def main_scipt():
     img_size = 256
     base_frequency = 1
@@ -173,6 +188,15 @@ def main_scipt():
     plt.show()
 
 
+def fully_random_generation(size):
+    arr = np.random.rand(size ** 2)
+    arr = arr.reshape([size, size])
+    plt.imshow(arr)
+    plt.gca().invert_yaxis()
+    plt.show()
+
+
 if __name__ == '__main__':
-    # gen_images_effect_of_details(256, 1, 3)
-    gen_images_effect_of_number_of_sub_grids(256, 0, 0)
+    # gen_images_effect_of_details(256, 3, 1)
+    gen_images_effect_of_number_of_sub_grids(256, 3, 0)
+    # fully_random_generation(256)
