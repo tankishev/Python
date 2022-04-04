@@ -1,5 +1,4 @@
 import matplotlib.pyplot
-
 from Temp.Maps import save_object, read_object_from_file, calc_distance, GeocodingAPI, print_execution_time
 from csv import reader
 from credit_observation import Credit, Observation
@@ -9,7 +8,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.cluster import DBSCAN
-
 
 
 def get_data_from_excel():
@@ -72,7 +70,10 @@ def radius_search_by_id(search_for='100331054', radius=300):
     v_distance = np.vectorize(calc_distance)
     np_distance = v_distance(lat_a, lng_a, ar_lat_b, ar_lng_b)
 
-    output = [(item.credit.creditid, ("Good", "Bad")[item.credit.bad_flag], np_distance[i], item.google_address.formatted_address)
+    output = [(item.credit.creditid,
+               ("Good", "Bad")[item.credit.bad_flag],
+               np_distance[i],
+               item.google_address.formatted_address)
               for i, item in enumerate(filtered_observations)]
 
     output = list(filter(lambda x: x[2] <= radius, output))
@@ -190,7 +191,7 @@ def update_dpd(max_dpd_active=60, max_dpd_repaid=90, repaid_statuses=('Пред�
 
 
 @print_execution_time
-def download_maps_data():
+def download_maps_data(max_records_to_download: int):
 
     @RateLimiter(10, 1)
     def rate_limited_google_call(conn, address):
@@ -200,7 +201,7 @@ def download_maps_data():
 
     # config
     file_name = 'credit.observations'
-    extract_size = 200
+    extract_size = max_records_to_download
 
     # read observations
     observations = read_object_from_file(file_name)
@@ -321,7 +322,6 @@ def plot_using_dbscan():
 
     print(set(cluster_labels))
 
-
     fig, ax = plt.subplots()
     ax.scatter(x_2[:, 0], x_2[:, 1], c=cluster_labels_2, cmap="viridis")
     x_left, x_right = ax.get_xlim()
@@ -336,11 +336,11 @@ if __name__ == '__main__':
 
     # update_records()
     # update_dpd()
-    # download_maps_data()
+    download_maps_data(200)
     # radius_search_by_id('100313259', 1)
     # view_record('100313259')
     # view_record('100309734')
     # get_clusters_by_radius(2, 5)
     # plot_points()
-    plot_using_dbscan()
+    # plot_using_dbscan()
     # pass
