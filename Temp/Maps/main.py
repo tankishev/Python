@@ -1,9 +1,15 @@
+import matplotlib.pyplot
+
 from Temp.Maps import save_object, read_object_from_file, calc_distance, GeocodingAPI, print_execution_time
 from csv import reader
 from credit_observation import Credit, Observation
 from locations import ResidentialAddress, PermanentAddress
 from ratelimit import RateLimiter
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.cluster import DBSCAN
+
 
 
 def get_data_from_excel():
@@ -37,6 +43,12 @@ def get_data_from_excel():
 @print_execution_time
 def radius_search_by_id(search_for='100331054', radius=300):
 
+    def filter_func(item):
+        return item.google_address is not None \
+            and item.google_address.geocoding_data.get('status', None) == 'OK' \
+            and item.credit.creditid != search_for \
+            and item.google_address.address_components['country'] == 'Bulgaria'
+
     # set-up
     file_name = 'credit.observations'
 
@@ -49,10 +61,6 @@ def radius_search_by_id(search_for='100331054', radius=300):
     record_a = next(item for item in observations if item.credit.creditid == search_for)
 
     # filter incomplete observations
-    filter_func = lambda item: item.google_address is not None \
-                               and item.google_address.geocoding_data.get('status', None) == 'OK' \
-                               and item.credit.creditid != search_for \
-                               and item.google_address.address_components['country'] == 'Bulgaria'
     filtered_observations = list(filter(filter_func, observations))
 
     # calculate distance to point
@@ -71,24 +79,30 @@ def radius_search_by_id(search_for='100331054', radius=300):
     output = sorted(output, key=lambda x: x[2])
     print(f'{len(output)} loans at distance {radius}km from {("Good", "Bad")[record_a.credit.bad_flag]} '
           f'CreditID {search_for}')
+    share_bad = len([el for el in output if el[1] == 'Bad']) / len(output)
+    print(f'Share of bad loans: {share_bad:.2f}')
     print(*output, sep='\n')
 
 
 @print_execution_time
 def get_clusters_by_radius(radius=10, min_cluster_size=10):
 
+    def filter_func(item):
+        criteria = [
+            item.google_address.geocoding_data.get('status', None) == 'OK',
+            item.google_address is not None,
+            item.google_address.address_components['country'] == 'Bulgaria'
+        ]
+        return all(criteria)
+
     # set-up
     file_name = 'credit.observations'
-    filter_func = lambda item: item.google_address is not None \
-                               and item.google_address.geocoding_data.get('status', None) == 'OK' \
-                               and item.google_address.address_components['country'] == 'Bulgaria'
 
     # read observations
     observations = read_object_from_file(file_name)
     filtered_observations = list(filter(filter_func, observations))
 
     # get distances for each point
-    clusters = set()
     performance = {}
     v_distance = np.vectorize(calc_distance)
     for record_a in filtered_observations:
@@ -109,10 +123,6 @@ def get_clusters_by_radius(radius=10, min_cluster_size=10):
                 count_bad += 1
             performance[record_a.credit.creditid] = (count_bad/count, count, record_a.credit.bad_flag)
 
-        # output.append(record_a.credit.creditid)
-        # clusters.add(tuple(sorted(output)))
-
-    # print(f'{len(clusters)} clusters identified')
     sorted_dict = sorted(performance.items(), key=lambda item: -item[1][0])
     print(*sorted_dict, sep='\n')
 
@@ -196,8 +206,7 @@ def download_maps_data():
     observations = read_object_from_file(file_name)
 
     # filter incomplete observations
-    filter_observations = lambda item: item.google_address is None and not item.address.incomplete
-    records = list(filter(filter_observations, observations))
+    records = list(filter(lambda item: item.google_address is None and not item.address.incomplete, observations))
 
     # extract data
     i = 0
@@ -214,14 +223,124 @@ def download_maps_data():
     save_object(observations, file_name)
 
 
+def plot_points():
+
+    def filter_func(item):
+        return item.google_address is not None \
+              and item.google_address.geocoding_data.get('status', None) == 'OK' \
+              and item.google_address.address_components['country'] == 'Bulgaria'
+
+    # read observations
+    file_name = 'credit.observations'
+    observations = read_object_from_file(file_name)
+
+    # filter observations
+    filtered_observations = list(filter(filter_func, observations))
+
+    # prepare data
+    data = {
+        'lat': [item.google_address.coordinates['lat'] for item in filtered_observations],
+        'lng': [item.google_address.coordinates['lng'] for item in filtered_observations],
+        'is_bad': [('good', 'bad')[item.credit.bad_flag] for item in filtered_observations]
+    }
+
+    df = pd.DataFrame(data)
+
+    # plot data
+    groups = df.groupby('is_bad')
+    img = plt.imread("bulgaria.png")
+
+    fig, ax = plt.subplots()
+
+    ax.imshow(img, extent=[22.10921, 28.88864, 41.10054, 44.3931])
+    for name, group in groups:
+        ax.plot(group.lng, group.lat, marker='o', linestyle='', markersize=12, label=name)
+
+    x_left, x_right = ax.get_xlim()
+    y_low, y_high = ax.get_ylim()
+    ax.axes.set_aspect(abs((x_right-x_left)/(y_low-y_high))/1.6)
+
+    plt.legend()
+    plt.show()
+
+
+def plot_using_dbscan():
+    def filter_func(item):
+        return item.google_address is not None \
+            and item.google_address.geocoding_data.get('status', None) == 'OK' \
+            and item.google_address.address_components['country'] == 'Bulgaria' \
+            and item.credit.bad_flag
+
+    # set-up
+    kms_per_radian = 6371.0088
+    epsilon = 1 / kms_per_radian
+    num_points = 5
+    img = plt.imread("bulgaria.png")
+
+    # read observations
+    file_name = 'credit.observations'
+    observations = read_object_from_file(file_name)
+
+    # filter observations
+    filtered_observations = list(filter(filter_func, observations))
+
+    # prepare data
+    data = {
+        'lat': [item.google_address.coordinates['lat'] for item in filtered_observations],
+        'lng': [item.google_address.coordinates['lng'] for item in filtered_observations],
+        'is_bad': [('good', 'bad')[item.credit.bad_flag] for item in filtered_observations]
+    }
+    df = pd.DataFrame(data)
+    df_coords = df[['lng', 'lat']]
+    coord = df_coords.to_numpy()
+    x = np.radians(coord)
+    db = DBSCAN(eps=epsilon, min_samples=num_points, algorithm='ball_tree', metric='haversine').fit(x)
+    cluster_labels = db.labels_
+    n_clusters = len(set(cluster_labels))
+    n_noise = list(cluster_labels).count(-1)
+    clusters = pd.Series([coord[cluster_labels == n] for n in range(n_clusters)])
+    print(f'Data points: {len(filtered_observations)}')
+    print(f'Cluster labels: {len(cluster_labels)}')
+    print(f'Number of clusters: {n_clusters}')
+    print(f'Number of noise points: {n_noise}')
+
+    # some after work
+    filter_array = [el != -1 for el in cluster_labels]
+    x_2 = x[filter_array]
+    cluster_labels_2 = cluster_labels[filter_array]
+    filtered_observations_2 = [item for i, item in enumerate(filtered_observations) if filter_array[i]]
+    output = [(item.credit.creditid, item.google_address.formatted_address, item.google_address.coordinates)
+              for item in filtered_observations_2]
+    output = sorted(output, key=lambda item: item[2]['lng'])
+    print(len(filtered_observations_2))
+    print(*output, sep='\n')
+
+    # get the good ones close to the cores
+    core_observations = [item.credit.creditid for i, item in enumerate(filtered_observations)
+                         if i in db.core_sample_indices_]
+
+    print(set(cluster_labels))
+
+
+    fig, ax = plt.subplots()
+    ax.scatter(x_2[:, 0], x_2[:, 1], c=cluster_labels_2, cmap="viridis")
+    x_left, x_right = ax.get_xlim()
+    y_low, y_high = ax.get_ylim()
+    # ax.axes.set_aspect(abs((x_right-x_left)/(y_low-y_high))/1)
+    # ax.imshow(img, extent=[x_left, x_right, y_low, y_high])
+
+    plt.show()
+
+
 if __name__ == '__main__':
 
     # update_records()
-    update_dpd()
+    # update_dpd()
     # download_maps_data()
-    # radius_search_by_id('100295773', 2)
-    # view_record('100295773')
+    # radius_search_by_id('100313259', 1)
+    # view_record('100313259')
     # view_record('100309734')
     # get_clusters_by_radius(2, 5)
+    # plot_points()
+    plot_using_dbscan()
     # pass
-
