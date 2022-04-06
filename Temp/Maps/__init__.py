@@ -1,2 +1,2 @@
 from .utilities import *
-from googe_geocoding import GeocodingAPI
+from Temp.Maps.GoogleData.googe_geocoding import GeocodingAPI
