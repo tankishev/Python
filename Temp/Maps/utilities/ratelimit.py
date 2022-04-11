@@ -1,5 +1,5 @@
-import functools
 from datetime import datetime
+import functools
 
 
 class RateLimiter:

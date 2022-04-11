@@ -1,7 +1,8 @@
-import pickle
+from abc import ABC, abstractmethod
+from DataObjects.utilities import load_object
 
 
-class Observations:
+class DataObject(ABC):
 
     def __init__(self, file_path) -> None:
         self.collection = None
@@ -18,6 +19,41 @@ class Observations:
             raise ValueError("Path cannot be an empty string")
         self.__file_path = value
 
+    def load_data(self) -> None:
+        self.collection = load_object(self.file_path)
+
+    @abstractmethod
+    def filter(self, **kwargs):
+        pass
+
+    @classmethod
+    def __from_filter(cls, path: str, observation_list: list) -> object:
+        new_object = cls(path)
+        new_object.collection = [el for el in observation_list]
+        return new_object
+
+    def __iter__(self) -> iter:
+        self.__collection_index = 0
+        return self
+
+    def __next__(self):
+        if self.__collection_index < len(self.collection):
+            self.__collection_index += 1
+            return self.collection[self.__collection_index - 1]
+        raise StopIteration()
+
+    def __len__(self):
+        return len(self.collection)
+
+    def __getitem__(self, item):
+        return self.collection[item]
+
+
+class CreditObservations(DataObject):
+
+    def __init__(self, file_path) -> None:
+        super().__init__(file_path)
+
     @property
     def coordinates(self):
         return [el.coordinates for el in self.collection]
@@ -25,19 +61,6 @@ class Observations:
     @property
     def coordinates_reversed(self):
         return [el.coordinates_reversed for el in self.collection]
-
-    def load_data(self) -> None:
-        try:
-            with open(self.file_path, 'rb') as file:
-                self.collection = pickle.load(file)
-        except FileNotFoundError:
-            return None
-
-    @classmethod
-    def __from_filter(cls, path: str, observation_list: list) -> object:
-        new_object = Observations(path)
-        new_object.collection = [el for el in observation_list]
-        return new_object
 
     def filter(self, **kwargs):
         filters = {
@@ -69,18 +92,3 @@ class Observations:
 
         return self.__from_filter(self.file_path, filtered_list)
 
-    def __iter__(self) -> iter:
-        self.__collection_index = 0
-        return self
-
-    def __next__(self):
-        if self.__collection_index < len(self.collection):
-            self.__collection_index += 1
-            return self.collection[self.__collection_index - 1]
-        raise StopIteration()
-
-    def __len__(self):
-        return len(self.collection)
-
-    def __getitem__(self, item):
-        return self.collection[item]

@@ -1,4 +1,4 @@
-from Temp.Maps.DataObjects.locations import AddressLocation
+from Temp.Maps.GeoUtilities.location import AddressLocation
 from Temp.Maps.DataObjects.credit import Credit
 
 
@@ -27,3 +27,4 @@ class Observation:
             google_coordinates = self.google_address.coordinates
             if google_coordinates:
                 return google_coordinates['lng'], google_coordinates['lat']
+

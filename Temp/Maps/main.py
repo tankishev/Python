@@ -1,8 +1,6 @@
-from Temp.Maps import GeocodingAPI
 from csv import reader
-from Temp.Maps.utilities.utilities import print_execution_time, save_object, calc_distance
-from Temp.Maps.utilities.ratelimit import RateLimiter
-from Temp.Maps.DataObjects import Credit, Observation, Observations, ResidentialAddress, PermanentAddress
+from DataObjects.utilities import print_execution_time, save_object, calc_distance
+from Temp.Maps.DataObjects import Credit, Observation, CreditObservations, ResidentialAddress, PermanentAddress
 from sklearn.cluster import DBSCAN
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,8 +9,8 @@ import pandas as pd
 
 def get_data_from_excel():
     observations = []
-
-    with open('Data/A1_Info_2.csv', 'r') as read_obj:
+    filename = ''
+    with open(filename, 'r') as read_obj:
         csv_reader = reader(read_obj)
         i = 0
         for row in csv_reader:
@@ -41,7 +39,7 @@ def radius_search_by_id(search_for='100331054', radius=300, verbose=False):
 
     # set-up
     file_name = 'Data/credit.observations'
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
 
     # check for searched item
@@ -91,7 +89,7 @@ def get_clusters_by_radius(radius=10, min_cluster_size=10):
     file_name = 'Data/credit.observations'
 
     # read observations
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
     filtered_observations = observations.filter(g_status='OK', country='Bulgaria')
 
@@ -124,7 +122,7 @@ def view_record(search_for='100331054'):
     file_name = 'Data/credit.observations'
 
     # read observations
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
 
     try:
@@ -138,7 +136,7 @@ def update_records():
 
     # read observations
     file_name = 'Data/credit.observations'
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
 
     # update Prepaid and Paid not as bad
@@ -153,7 +151,8 @@ def update_records():
 
 
 def update_dpd(max_dpd_active=60, max_dpd_repaid=90, repaid_statuses=('Предсрочно погасен', 'Погасен')):
-    with open('Data/A1_Info_2.csv', 'r') as read_obj:
+    filename = ''
+    with open(filename, 'r') as read_obj:
         csv_reader = reader(read_obj)
         dpd_data = {}
         i = 0
@@ -168,7 +167,7 @@ def update_dpd(max_dpd_active=60, max_dpd_repaid=90, repaid_statuses=('Пред�
             i += 1
 
     file_name = 'Data/credit.observations'
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
 
     i = 0
@@ -184,47 +183,12 @@ def update_dpd(max_dpd_active=60, max_dpd_repaid=90, repaid_statuses=('Пред�
         print(f'{i} observations updated')
 
 
-@print_execution_time
-def download_maps_data(max_records_to_download: int):
-
-    @RateLimiter(10, 1)
-    def rate_limited_google_call(conn, address):
-        conn.get_location_data(address, region='BG')
-        retval = conn.get_address()
-        return retval
-
-    # config
-    file_name = 'Data/credit.observations'
-    extract_size = max_records_to_download
-
-    # read observations
-    observations = Observations(file_name)
-    observations.load_data()
-
-    # filter incomplete observations
-    records = list(filter(lambda item: item.google_address is None and not item.address.incomplete, observations))
-
-    # extract data
-    print(f'Total records w/o google coordinates: {len(records)}\nStarting download of: {extract_size} records')
-    i = 0
-    connector = GeocodingAPI('json')
-    for record in records:
-        g_address = rate_limited_google_call(connector, record.address.address)
-        record.google_address = g_address
-        i += 1
-        if i >= extract_size:
-            break
-    print(f'Addresses downloaded: {i}\nItems left: {len(records) - i}')
-
-    # save data
-    save_object(observations, file_name)
-
 
 def plot_points():
 
     # read observations
     file_name = 'Data/credit.observations'
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
 
     # filter observations
@@ -267,7 +231,7 @@ def plot_using_dbscan(distance_in_km: int, min_points: int, print_bad_rate=False
 
     # read observations
     file_name = 'Data/credit.observations'
-    observations = Observations(file_name)
+    observations = CreditObservations(file_name)
     observations.load_data()
 
     # filter observations

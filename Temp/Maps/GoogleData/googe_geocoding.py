@@ -1,46 +1,7 @@
-from google_api_connection import GoogleAPIConnection
+from GoogleData.google_api_connection import GoogleAPIConnection
+from GeoUtilities.google_address import GoogleAddress
 from urllib.parse import urlencode
-from Temp.Maps.DataObjects.locations import Location
 import requests
-
-
-class GoogleAddress(Location):
-
-    def __init__(self, geocoding_data: dict) -> None:
-        self.geocoding_data = geocoding_data
-
-    def get_info(self):
-        status = self.geocoding_data.get('status', None)
-        if status != 'OK':
-            return {'status': status}
-        retval = dict()
-        retval['location'] = self.coordinates
-        retval['formatted_address'] = self.formatted_address
-        retval['address_components'] = self.address_components
-        return retval
-
-    @property
-    def coordinates(self):
-        status = self.geocoding_data.get('status', None)
-        if status == 'OK':
-            return self.geocoding_data['results'][0].get('geometry', None).get('location', None)
-
-    @property
-    def formatted_address(self):
-        return self.geocoding_data['results'][0].get('formatted_address', None)
-
-    @property
-    def address_components(self):
-        retval = dict()
-        results = self.geocoding_data.get('results', None)
-        if results:
-            address_data = results[0].get('address_components', None)
-            for el in address_data:
-                retval[el['types'][0]] = el.get('long_name', None)
-            return retval
-
-    def __repr__(self):
-        return f'GoogleAddress({self.geocoding_data})'
 
 
 class GeocodingAPI(GoogleAPIConnection):
