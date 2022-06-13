@@ -21,6 +21,7 @@ class VCFFile:
         self.path = path
         self.max_chars = max_chars
         self.file_object = None
+        self.contacts = 0
 
     def open(self) -> None:
         if not self.file_object:
@@ -37,57 +38,60 @@ class VCFFile:
                 data_string = ' ' + data_string[self.max_chars:]
             self.file_object.write(f"{data_string}\n")
         self.file_object.write(f"END:VCARD\n")
+        self.contacts += 1
 
     def close(self):
         self.file_object.close()
+        print(f'{self.contacts} contacts added')
 
 
 def main():
     file = VCFFile('python_contacts.vcf')
     file.open()
 
-    with open('contacts_done.csv', 'r', encoding='utf-8') as data_file:
+    with open('boryana_contacts_clean.csv', 'r', encoding='utf-8') as data_file:
         csv_reader = reader(data_file)
         header = next(csv_reader, None)
         for data_row in csv_reader:
             contact_data = list()
             row = ['' if el is None or el.isspace() else el for el in data_row]
 
+            n = Counter(0)
             # read all data
-            prefix = row[0]
-            first_name = row[1]
-            middle_name = row[2]
-            last_name = row[3]
-            suffix = row[4]
-            company = row[5]
-            department = row[6]
-            title = row[7]
+            prefix = ''
+            first_name = row[next(n)]
+            middle_name = row[next(n)]
+            last_name = row[next(n)]
+            suffix = ''
+            company = ''
+            department = ''
+            title = ''
             address_post_office = ''
             address_extended = ''
-            address_street = row[8]
-            address_locality = row[9]
-            address_region = row[10]
-            address_postal_code = row[11]
-            address_country = row[12]
+            address_street = ''
+            address_locality = ''
+            address_region = ''
+            address_postal_code = ''
+            address_country = ''
             home_address_post_office = ''
             home_address_extended = ''
-            home_address_street = row[13]
-            home_address_locality = row[14]
+            home_address_street = ''
+            home_address_locality = ''
             home_address_region = ''
-            home_address_postal_code = row[15]
-            home_address_country = row[16]
-            phone_business_fax = row[17]
-            phone_business_1 = row[18]
-            phone_business_2 = row[19]
-            phone_home_1 = row[20]
-            phone_home_2 = row[21]
-            phone_mobile = row[22]
-            birthday = row[23]
-            email_1 = row[24]
-            email_2 = row[25]
-            email_3 = row[26]
-            notes = row[27]
-            website = row[28]
+            home_address_postal_code = ''
+            home_address_country = ''
+            phone_business_fax = ''
+            phone_business_1 = row[next(n)]
+            phone_business_2 = ''
+            phone_home_1 = row[next(n)]
+            phone_home_2 = ''
+            phone_mobile = row[next(n)]
+            birthday = ''
+            email_1 = row[next(n)]
+            email_2 = ''
+            email_3 = ''
+            notes = row[next(n)]
+            website = ''
 
             i = Counter(1)
 
@@ -106,8 +110,11 @@ def main():
 
             contact_data.append(f"FN:{formatted_name}")
             contact_data.append(f"N:{name}")
-            contact_data.append(f"ORG:{org}")
-            contact_data.append(f"TITLE:{title}")
+
+            if org != ';':
+                contact_data.append(f"ORG:{org}")
+            if title != '':
+                contact_data.append(f"TITLE:{title}")
 
             # addresses
             work_address = f"{address_post_office};{address_extended};{address_street};{address_locality};" \
@@ -176,7 +183,7 @@ def main():
             if notes != '':
                 contact_data.append(f'NOTE;CHARSET=utf-8:{notes}')
 
-            # catergory
+            # category
             contact_data.append('CATEGORIES:PyVCF generated')
             file.write_data(contact_data)
 
@@ -185,3 +192,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
