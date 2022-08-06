@@ -24,7 +24,7 @@ class Table(ABC):
     
     @capacity.setter
     def capacity(self, value):
-        if value < 0:
+        if value <= 0:
             raise ValueError("Capacity has to be greater than 0!")
         self.__capacity = value
 
@@ -41,7 +41,8 @@ class Table(ABC):
         self.__table_number = value
 
     def reserve(self, number_of_people: int):
-        if not self.is_reserved:
+        # try without the if
+        if not self.is_reserved and number_of_people <= self.capacity:
             self.number_of_people = number_of_people
             self.is_reserved = True
 

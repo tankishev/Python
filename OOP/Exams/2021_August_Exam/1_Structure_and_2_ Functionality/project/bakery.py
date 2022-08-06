@@ -2,7 +2,6 @@ from project.drink.tea import Tea
 from project.drink.water import Water
 from project.baked_food.cake import Cake
 from project.baked_food.bread import Bread
-from project.baked_food.baked_food import BakedFood
 from project.table.inside_table import InsideTable
 from project.table.outside_table import OutsideTable
 from project.table.table import Table
@@ -47,7 +46,7 @@ class Bakery:
     
     @name.setter
     def name(self, value: str):
-        if value == '' or value.isspace():
+        if not value or value.isspace():
             raise ValueError("Name cannot be empty string or white space!")
         self.__name = value
 
@@ -55,6 +54,7 @@ class Bakery:
         if food_type in ("Bread", "Cake"):
             if any(food.name == name for food in self.food_menu):
                 raise Exception(f"{food_type} {name} is already in the menu!")
+
             new_food = ObjectFactory.food(food_type, name, price)
             self.food_menu.append(new_food)
             return f"Added {name} ({food_type}) to the food menu"
@@ -63,6 +63,7 @@ class Bakery:
         if drink_type in ("Tea", "Water"):
             if any(drink.name == name for drink in self.drinks_menu):
                 raise Exception(f"{drink_type} {name} is already in the menu!")
+
             new_drink = ObjectFactory.drink(drink_type, name, portion, brand)
             self.drinks_menu.append(new_drink)
             return f"Added {name} ({brand}) to the drink menu"
@@ -71,6 +72,7 @@ class Bakery:
         if table_type in ("InsideTable", "OutsideTable"):
             if any(table.table_number == table_number for table in self.tables_repository):
                 raise Exception(f"Table {table_number} is already in the bakery!")
+
             new_table = ObjectFactory.table(table_type, table_number, capacity)
             self.tables_repository.append(new_table)
             return f"Added table number {table_number} in the bakery"
@@ -86,43 +88,46 @@ class Bakery:
         found_table = self.__get_table_by_number(table_number)
         if found_table:
             skipped_items = []
+            available_foods = [food.name for food in self.food_menu]
             for food_name in food_names:
-                try:
+                if food_name in available_foods:
                     food = next(food for food in self.food_menu if food.name == food_name)
                     found_table.order_food(food)
-                except StopIteration:
+                else:
                     skipped_items.append(food_name)
-                finally:
-                    retval = found_table.food_order
-                    if skipped_items:
-                        retval += f'{self.name} does not have in the menu:\n'
-                        retval += '\n'.join(skipped_items)
-                    return retval.rstrip()
+
+            retval = found_table.food_order
+            if skipped_items:
+                retval += f'\n{self.name} does not have in the menu:\n'
+                retval += '\n'.join(skipped_items)
+            return retval.rstrip()
         return f"Could not find table {table_number}"
 
     def order_drink(self, table_number: int, *drink_names: str):
         found_table = self.__get_table_by_number(table_number)
         if found_table:
             skipped_items = []
+            available_drinks = [drink.name for drink in self.drinks_menu]
             for drink_name in drink_names:
-                try:
+                if drink_name in available_drinks:
                     drink = next(drink for drink in self.drinks_menu if drink.name == drink_name)
                     found_table.order_drink(drink)
-                except StopIteration:
+                else:
                     skipped_items.append(drink_name)
-                finally:
-                    retval = found_table.drink_order
-                    if skipped_items:
-                        retval += f'{self.name} does not have in the menu:\n'
-                        retval += '\n'.join(skipped_items)
-                    return retval.rstrip()
-            return f"Could not find table {table_number}"
+
+            retval = found_table.drinks_order
+            if skipped_items:
+                retval += f'\n{self.name} does not have in the menu:\n'
+                retval += '\n'.join(skipped_items)
+            return retval.rstrip()
+        return f"Could not find table {table_number}"
 
     def leave_table(self, table_number: int):
         found_table = self.__get_table_by_number(table_number)
         if found_table:
-            retval = f'"Table: {table_number}' \
+            retval = f'Table: {table_number}' \
                      f'\nBill: {found_table.get_bill():.2f}'
+            self.total_income += found_table.get_bill()
             found_table.clear()
             return retval
 
@@ -141,5 +146,5 @@ class Bakery:
 
     def __get_free_table(self, number_of_people: int) -> Table:
         for table in self.tables_repository:
-            if table.capacity <= number_of_people and not table.is_reserved:
+            if table.capacity >= number_of_people and not table.is_reserved:
                 return table

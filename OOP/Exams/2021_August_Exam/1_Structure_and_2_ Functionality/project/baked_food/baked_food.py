@@ -15,7 +15,7 @@ class BakedFood(ABC):
 
     @name.setter
     def name(self, value: str):
-        if value == '' or value.isspace():
+        if not value or value.isspace():
             raise ValueError("Name cannot be empty string or white space!")
         self.__name = value
 
@@ -30,4 +30,4 @@ class BakedFood(ABC):
         self.__price = value
 
     def __repr__(self):
-        return f" - {self.name}: {self.portion}g - {self.price}lv"
+        return f" - {self.name}: {self.portion:.2f}g - {self.price:.2f}lv"

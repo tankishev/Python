@@ -16,7 +16,7 @@ class Drink(ABC):
 
     @name.setter
     def name(self, value: str):
-        if value == '' or value.isspace():
+        if not value or value.isspace():
             raise ValueError("Name cannot be empty string or white space!")
         self.__name = value
 
@@ -36,9 +36,9 @@ class Drink(ABC):
 
     @brand.setter
     def brand(self, value: str):
-        if value == '' or value.isspace():
+        if not value or value.isspace():
             raise ValueError("Brand cannot be empty string or white space!")
         self.__brand = value
 
     def __repr__(self):
-        return f" - {self.name} {self.brand} - {self.portion}ml - {self.price}lv"
+        return f" - {self.name} {self.brand} - {self.portion:.2f}ml - {self.price:.2f}lv"
