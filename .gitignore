@@ -119,3 +119,4 @@ dmypy.json
 #pycharm
 .idea/
 /Temp/Maps/GoogleData/google_api_connection.py
+/.vscode/
